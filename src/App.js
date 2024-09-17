@@ -214,39 +214,42 @@ EditableEditor.propTypes = {
 
 export const App = () => {
     const [content, setContent] = useState(iniContent);
+    const [isEditMode, setIsEditMode] = useState(true);
 
-    const readOnlyEditor = useEditor({
+    const editor = useEditor({
         extensions,
         content,
-        editable: false,
+        editable: isEditMode,
     });
 
     useEffect(() => {
-        if (readOnlyEditor) {
-            readOnlyEditor.commands.setContent(content, false);
+        if (editor) {
+            editor.commands.setContent(content, false);
         }
-    }, [content, readOnlyEditor]);
+    }, [content, editor]);
+
+    const handleToggle = () => {
+        setIsEditMode(!isEditMode);
+    };
+
 
     return (
-        <>
-            <EditorProvider
-                slotBefore={<MenuBar />}
-                extensions={extensions}
-                content={content}
-            >
-                <EditableEditor onUpdate={setContent} />
-            </EditorProvider>
-            <div
-                style={{
-                    borderTop: "1px solid #000",
-                    marginTop: "20px",
-                    paddingTop: "20px",
-                }}
-            >
-                <h3>Read-Only View:</h3>
-                {readOnlyEditor && <EditorContent editor={readOnlyEditor} />}
-            </div>
-        </>
+        <div>
+            <button onClick={handleToggle}>
+                {isEditMode ? "Edit Mode" : "View Mode"}
+            </button>
+            {editor && (
+                <EditorProvider
+                    slotBefore={isEditMode ? <MenuBar/> : null}
+                    extensions={extensions}
+                    content={content}
+                    editor={editor}
+                >
+                    <EditableEditor onUpdate={setContent}/>
+                </EditorProvider>
+            )}
+
+        </div>
     );
 };
 
