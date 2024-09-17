@@ -3,9 +3,10 @@ import "./styles.scss";
 import { Color } from "@tiptap/extension-color";
 import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
-import { EditorProvider, useCurrentEditor } from "@tiptap/react";
+import {EditorContent, EditorProvider, useCurrentEditor, useEditor} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import PropTypes from "prop-types";
 
 const MenuBar = () => {
   const { editor } = useCurrentEditor();
@@ -161,7 +162,7 @@ const extensions = [
   }),
 ];
 
-const content = `
+const iniContent = `
 <h2>
   Hi there,
 </h2>
@@ -192,14 +193,61 @@ display: none;
 </blockquote>
 `;
 
+const EditableEditor = ({ onUpdate }) => {
+    const { editor } = useCurrentEditor();
+
+    useEffect(() => {
+        if (editor) {
+            editor.on('update', () => {
+                const content = editor.getHTML();
+                onUpdate(content);
+            });
+        }
+    }, [editor, onUpdate]);
+
+    return <EditorContent editor={editor} />;
+};
+
+EditableEditor.propTypes = {
+    onUpdate: PropTypes.func.isRequired,
+};
+
 export const App = () => {
-  return (
-    <EditorProvider
-      slotBefore={<MenuBar />}
-      extensions={extensions}
-      content={content}
-    ></EditorProvider>
-  );
+    const [content, setContent] = useState(iniContent);
+
+    const readOnlyEditor = useEditor({
+        extensions,
+        content,
+        editable: false,
+    });
+
+    useEffect(() => {
+        if (readOnlyEditor) {
+            readOnlyEditor.commands.setContent(content, false);
+        }
+    }, [content, readOnlyEditor]);
+
+    return (
+        <>
+            <EditorProvider
+                slotBefore={<MenuBar />}
+                extensions={extensions}
+                content={content}
+            >
+                <EditableEditor onUpdate={setContent} />
+            </EditorProvider>
+            <div
+                style={{
+                    borderTop: "1px solid #000",
+                    marginTop: "20px",
+                    paddingTop: "20px",
+                }}
+            >
+                <h3>Read-Only View:</h3>
+                {readOnlyEditor && <EditorContent editor={readOnlyEditor} />}
+            </div>
+        </>
+    );
 };
 
 export default App;
