@@ -6,6 +6,7 @@ import ListItem from "@tiptap/extension-list-item";
 import TextStyle from "@tiptap/extension-text-style";
 import { EditorContent, useEditor, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { MCQ } from "./MCQNode";
 
 interface MenuBarProps {
     editor: Editor | null;
@@ -15,6 +16,18 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
     // const { editor} = useCurrentEditor();
 
     if (!editor) return null;
+
+    const addMCQ = () => {
+        editor.commands.setMCQ({
+            questionText: 'question?',
+            answers: [
+                { text: 'answer 1', correct: false },
+                { text: 'answer 2', correct: false },
+                { text: 'answer 3', correct: false },
+                { text: 'answer 4', correct: false }
+            ]
+        });
+    };
 
     return (
         <>
@@ -57,33 +70,33 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
             >
                 paragraph
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    className={editor.isActive("heading", { level: 1 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 1}).run()}
+                    className={editor.isActive("heading", {level: 1}) ? "is-active" : ""}
             >
                 h1
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    className={editor.isActive("heading", { level: 2 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 2}).run()}
+                    className={editor.isActive("heading", {level: 2}) ? "is-active" : ""}
             >
                 h2
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-                    className={editor.isActive("heading", { level: 3 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 3}).run()}
+                    className={editor.isActive("heading", {level: 3}) ? "is-active" : ""}
             >
                 h3
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-                    className={editor.isActive("heading", { level: 4 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 4}).run()}
+                    className={editor.isActive("heading", {level: 4}) ? "is-active" : ""}
             >
                 h4
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
-                    className={editor.isActive("heading", { level: 5 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 5}).run()}
+                    className={editor.isActive("heading", {level: 5}) ? "is-active" : ""}
             >
                 h5
             </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 6 }).run()}
-                    className={editor.isActive("heading", { level: 6 }) ? "is-active" : ""}
+            <button onClick={() => editor.chain().focus().toggleHeading({level: 6}).run()}
+                    className={editor.isActive("heading", {level: 6}) ? "is-active" : ""}
             >
                 h6
             </button>
@@ -124,16 +137,19 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
                 redo
             </button>
             <button onClick={() => editor.chain().focus().setColor("#958DF1").run()}
-                    className={editor.isActive("textStyle", { color: "#958DF1" }) ? "is-active" : ""}
+                    className={editor.isActive("textStyle", {color: "#958DF1"}) ? "is-active" : ""}
             >
                 purple
+            </button>
+            <button onClick={addMCQ}>
+                Add MCQ
             </button>
         </>
     );
 };
 
 const extensions: Extensions = [
-    Color.configure({ types: [TextStyle.name, ListItem.name] }),
+    Color.configure({types: [TextStyle.name, ListItem.name] }),
     TextStyle.configure(),
     StarterKit.configure({
         bulletList: {
@@ -145,6 +161,7 @@ const extensions: Extensions = [
             keepAttributes: false,
         },
     }),
+    MCQ,
 ];
 
 const initContent = `
@@ -188,24 +205,29 @@ const EditableEditor: React.FC<EditableEditorProps> = ({ onUpdate, isEditMode, e
     useEffect(() => {
         if (editor) {
             editor.setEditable(isEditMode);
+            editor.view.state.doc.descendants((node, pos) => {
+                if (node.type.name === 'mcq') {
+                    const transaction = editor.view.state.tr.setNodeMarkup(pos, undefined, {
+                        ...node.attrs,
+                        mode: isEditMode ? 'edit' : 'view'
+                    });
+                    editor.view.dispatch(transaction);
+                }
+            });
         }
     }, [editor, isEditMode]);
 
     return <EditorContent editor={editor} />;
 };
 
-// App Component
 const App: React.FC = () => {
     const [content, setContent] = useState<string>(initContent);
     const [isEditMode, setIsEditMode] = useState<boolean>(true);
 
-    // useEffect(() => {
-    //     console.log("Content in state:", content);
-    // }, [content]);
     const editor = useEditor({
         extensions,
         content: initContent,
-        editable: isEditMode, // Tie editable state to isEditMode
+        editable: isEditMode,
         onUpdate: ({ editor }) => {
             const content = editor.getHTML();
             setContent(content);
@@ -221,7 +243,7 @@ const App: React.FC = () => {
             <button onClick={handleToggle}>
                 {isEditMode ? "Edit Mode" : "View Mode"}
             </button>
-            {editor && isEditMode && <MenuBar editor={editor} />}
+            {editor && isEditMode && <MenuBar editor={editor}/>}
             {editor && (
                 <EditableEditor
                     editor={editor}
