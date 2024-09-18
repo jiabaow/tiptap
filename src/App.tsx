@@ -241,7 +241,7 @@ const App: React.FC = () => {
     return (
         <div>
             <button onClick={handleToggle}>
-                {isEditMode ? "Edit Mode" : "View Mode"}
+                {isEditMode ? "View Mode" : "Edit Mode"}
             </button>
             {editor && isEditMode && <MenuBar editor={editor}/>}
             {editor && (
