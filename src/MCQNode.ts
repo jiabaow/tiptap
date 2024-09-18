@@ -2,8 +2,6 @@ import { Node, mergeAttributes, textblockTypeInputRule } from '@tiptap/core';
 import { ReactNodeViewRenderer } from '@tiptap/react';
 import MCQComponent from './MCQComponent';
 
-//https://bookdown.org/yihui/rmarkdown/learnr-quiz.html
-
 interface Answer {
     text: string;
     correct: boolean;
@@ -23,7 +21,22 @@ declare module '@tiptap/core' {
         }
     }
 }
-const MCQ_REGEX = /{r \[^\n]+, echo=FALSE\}\nquestion\("([^"]+)"\s*,\s*((?:answer\("([^"]+)",?\s*(correct\s*=\s*TRUE)?\s*\)[,\s]*)*)\)\n/;
+
+const MCQ_REGEX = /\{r [^\n]+, echo=FALSE\}\nquestion\("([^"]+)"(?:,\s*((?:\n?\s*answer\("([^"]+)"(?:,\s*correct\s*=\s*TRUE)?\))+))?\)/;
+const MCQ_SHORTCUT_REGEX = /^\?{3}\s*$/; // ??? opens a MCQ block
+
+function parseMarkdownMCQ(match: RegExpMatchArray) {
+    const [fullMatch, questionText, answersBlock = ''] = match;
+    const answerRegex = /answer\("([^"]+)"(?:,\s*correct\s*=\s*TRUE)?\)/g;
+
+    const answers: Answer[] = [];
+    let answerMatch;
+    while ((answerMatch = answerRegex.exec(answersBlock)) !== null) {
+        answers.push({ text: answerMatch[1], correct: !!answerMatch[2] });
+    }
+
+    return { questionText, answers };
+}
 
 export const MCQ = Node.create<MCQOptions>({
     name: 'mcq',
@@ -45,23 +58,23 @@ export const MCQ = Node.create<MCQOptions>({
             questionText: {
                 default: 'Your question?',
                 parseHTML: element => element.getAttribute('data-question-text'),
-                renderHTML: attributes => {
-                    return {
-                        'data-question-text': attributes.questionText,
-                    };
-                },
+                renderHTML: attributes => ({
+                    'data-question-text': attributes.questionText,
+                }),
             },
             answers: {
                 default: [] as Answer[],
                 parseHTML: element => JSON.parse(element.getAttribute('data-answers') || '[]'),
-                renderHTML: attributes => {
-                    return {
-                        'data-answers': JSON.stringify(attributes.answers),
-                    };
-                },
+                renderHTML: attributes => ({
+                    'data-answers': JSON.stringify(attributes.answers),
+                }),
             },
             mode: {
-                default: 'author',
+                default: 'edit',
+                parseHTML: element => element.getAttribute('data-mode'),
+                renderHTML: attributes => ({
+                    'data-mode': attributes.mode,
+                }),
             },
         };
     },
@@ -82,30 +95,33 @@ export const MCQ = Node.create<MCQOptions>({
         return {
             setMCQ:
                 (options: { questionText: string; answers: Answer[] }) =>
-                    ({ commands }) => {
-                        return commands.insertContent({
-                            type: this.name,
-                            attrs: options,
-                        });
-                    },
+                    ({ commands }) => commands.insertContent({
+                        type: this.name,
+                        attrs: options,
+                    }),
         };
     },
 
     addInputRules() {
         return [
             textblockTypeInputRule({
+                find: MCQ_SHORTCUT_REGEX,
+                type: this.type,
+                getAttributes: () => ({
+                    questionText: 'What number is the letter A in the English alphabet?',
+                    answers: [
+                        { text: '8', correct: false },
+                        { text: '14', correct: false },
+                        { text: '1', correct: true },
+                        { text: '23', correct: false },
+                    ],
+                    mode: 'edit'
+                }),
+            }),
+            textblockTypeInputRule({
                 find: MCQ_REGEX,
                 type: this.type,
-                getAttributes: match => {
-                    const [fullMatch, questionText, answersBlock] = match;
-                    const answers = Array.from(answersBlock.matchAll(/answer\("([^"]+)",?\s*correct\s*=\s*TRUE?\)/g)).map((match) => {
-                        return {
-                            text: match[1],
-                            correct: match[4] !== undefined
-                        };
-                    });
-                    return { questionText, answers };
-                },
+                getAttributes: match => parseMarkdownMCQ(match),
             }),
         ];
     },

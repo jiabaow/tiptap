@@ -102,7 +102,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                         value={questionText}
                         onChange={handleQuestionTextChange}
                         placeholder="Question"
-                        style={{width: '100%', resize: 'none', overflow: 'hidden'}}
+                        style={{width: '100%', resize: 'none', overflow: 'hidden', minHeight: '3em'}}
                     />
                     {answers.map((answer, index) => (
                         <div key={index}>
@@ -111,7 +111,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                                 value={answer.text}
                                 onChange={(e) => handleAnswerTextAreaChange(index, e)}
                                 placeholder={`Answer ${index + 1}`}
-                                style={{width: '75%', resize: 'none', overflow: 'hidden'}}
+                                style={{width: '75%', resize: 'none', overflow: 'hidden', minHeight: "2em"}}
                             />
                             <input
                                 type="checkbox"
