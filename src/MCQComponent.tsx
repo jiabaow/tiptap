@@ -20,6 +20,7 @@ interface MCQComponentProps {
 const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) => {
     const { questionText, answers, mode } = node.attrs;
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+    const [submitted, setSubmitted] = useState<boolean>(false);
 
     const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
     const answerTextareaRefs = useRef<Array<HTMLTextAreaElement | null>>([]);
@@ -83,6 +84,15 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
         updateAttributes({ answers: newAnswers });
     };
 
+    const handleSubmit = () => {
+        setSubmitted(true);
+    }
+
+    const isSelectedAnswerCorrect = () => {
+        const answer = answers.find(answer => answer.text === selectedAnswer);
+        return answer?.correct;
+    };
+
     return (
         <NodeViewWrapper className="mcq-node">
             {mode === 'edit' ? (
@@ -128,11 +138,24 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                                 value={answer.text}
                                 checked={selectedAnswer === answer.text}
                                 onChange={() => handleAnswerChange(index)}
-                                disabled={mode !== 'view'}
+                                disabled={submitted}
                             />
-                            <label>{answer.text}</label>
+                            <label style={{ marginLeft: 8 }}>{answer.text}</label>
+                            {submitted && selectedAnswer === answer.text && (
+                                <span
+                                    style={{
+                                        marginLeft: 8,
+                                        color: isSelectedAnswerCorrect() ? 'green' : 'red',
+                                    }}
+                                >
+                                  {isSelectedAnswerCorrect() ? 'Correct' : 'Incorrect'}
+                                </span>
+                            )}
                         </div>
                     ))}
+                    {!submitted && (
+                        <button type="button" onClick={handleSubmit}>Submit</button>
+                    )}
                 </div>
             )}
             <NodeViewContent/>
