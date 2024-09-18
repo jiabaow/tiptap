@@ -44,9 +44,21 @@ export const MCQ = Node.create<MCQOptions>({
         return {
             questionText: {
                 default: 'Your question?',
+                parseHTML: element => element.getAttribute('data-question-text'),
+                renderHTML: attributes => {
+                    return {
+                        'data-question-text': attributes.questionText,
+                    };
+                },
             },
             answers: {
                 default: [] as Answer[],
+                parseHTML: element => JSON.parse(element.getAttribute('data-answers') || '[]'),
+                renderHTML: attributes => {
+                    return {
+                        'data-answers': JSON.stringify(attributes.answers),
+                    };
+                },
             },
             mode: {
                 default: 'author',

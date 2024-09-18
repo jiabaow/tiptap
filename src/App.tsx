@@ -193,6 +193,7 @@ display: none;
   <br />
   — Mom
 </blockquote>
+<div data-type="mcq" data-question-text="What number is the letter A in the English alphabet?" data-answers='[{"text":"8","correct":false},{"text":"14","correct":false},{"text":"1","correct":true},{"text":"23","correct":false}]'></div>
 `;
 
 interface EditableEditorProps {
