@@ -142,7 +142,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
                 purple
             </button>
             <button onClick={addMCQ}>
-                Add MCQ
+                add mcq
             </button>
         </>
     );
