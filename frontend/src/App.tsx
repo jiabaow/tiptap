@@ -19,7 +19,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
 
     const addMCQ = () => {
         editor.commands.setMCQ({
-            questionText: 'question?',
+            questionText: 'Question?',
             answers: [
                 { text: 'answer 1', correct: false },
                 { text: 'answer 2', correct: false },

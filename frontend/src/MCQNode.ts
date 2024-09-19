@@ -108,12 +108,12 @@ export const MCQ = Node.create<MCQOptions>({
                 find: MCQ_SHORTCUT_REGEX,
                 type: this.type,
                 getAttributes: () => ({
-                    questionText: 'What number is the letter A in the English alphabet?',
+                    questionText: 'Question?',
                     answers: [
-                        { text: '8', correct: false },
-                        { text: '14', correct: false },
-                        { text: '1', correct: true },
-                        { text: '23', correct: false },
+                        { text: 'answer 1', correct: false },
+                        { text: 'answer 2', correct: false },
+                        { text: 'answer 3', correct: false },
+                        { text: 'answer 4', correct: false },
                     ],
                     mode: 'edit'
                 }),
