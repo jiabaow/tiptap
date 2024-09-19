@@ -143,11 +143,11 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                                 type="checkbox"
                                 checked={answer.correct}
                                 onChange={(e) => handleAnswerCorrectChange(index, e.target.checked)}
-                                style={{ marginLeft: '8px' }} // Add margin for spacing
+                                style={{ marginLeft: '8px' }}
                             />
                             <button
                                 onClick={() => removeAnswer(index)}
-                                style={{ marginLeft: '8px' }} // Add margin for spacing
+                                style={{ marginLeft: '8px' }}
                             >
                                 Remove
                             </button>
