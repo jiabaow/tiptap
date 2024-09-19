@@ -128,23 +128,27 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                         value={questionText}
                         onChange={handleQuestionTextChange}
                         placeholder="Question"
-                        style={{width: '100%', resize: 'none', overflow: 'hidden', minHeight: '3em'}}
+                        style={{width: '100%', resize: 'none', overflow: 'hidden', minHeight: '2em'}}
                     />
                     {answers.map((answer, index) => (
-                        <div key={index}>
-                            <textarea
-                                ref={(el) => answerTextareaRefs.current[index] = el}
-                                value={answer.text}
-                                onChange={(e) => handleAnswerTextAreaChange(index, e)}
-                                placeholder={`Answer ${index + 1}`}
-                                style={{width: '75%', resize: 'none', overflow: 'hidden', minHeight: "2em"}}
-                            />
+                        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                        <textarea
+                            ref={(el) => answerTextareaRefs.current[index] = el}
+                            value={answer.text}
+                            onChange={(e) => handleAnswerTextAreaChange(index, e)}
+                            placeholder={`Answer ${index + 1}`}
+                            style={{ width: '75%', resize: 'none', overflow: 'hidden', minHeight: "2em" }}
+                        />
                             <input
                                 type="checkbox"
                                 checked={answer.correct}
                                 onChange={(e) => handleAnswerCorrectChange(index, e.target.checked)}
+                                style={{ marginLeft: '8px' }} // Add margin for spacing
                             />
-                            <button onClick={() => removeAnswer(index)}>
+                            <button
+                                onClick={() => removeAnswer(index)}
+                                style={{ marginLeft: '8px' }} // Add margin for spacing
+                            >
                                 Remove
                             </button>
                         </div>
@@ -155,7 +159,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                 </div>
             ) : (
                 <div className="mcq-view">
-                    <p>{questionText}</p>
+                    <p style={{marginBottom: '5px'}}>{questionText}</p>
                     {answers.map((answer, index) => (
                         <div key={index}>
                             <input
