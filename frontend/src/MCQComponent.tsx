@@ -22,7 +22,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
     const { questionText, answers, mode } = node.attrs;
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
-    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [, setIsCorrect] = useState<boolean | null>(null);
     const [uniqueName] = useState(() => nanoid());
 
     const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
