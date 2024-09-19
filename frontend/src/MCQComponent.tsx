@@ -84,9 +84,29 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
         updateAttributes({ answers: newAnswers });
     };
 
-    const handleSubmit = () => {
-        setSubmitted(true);
-    }
+    // const handleSubmit = () => {
+    //     setSubmitted(true);
+    // }
+    const handleSubmit = async () => {
+        const response = await fetch('http://127.0.0.1:8000/api/submissions/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                question_text: questionText,
+                user_answer: selectedAnswer,
+                answers: answers.map(answer => ({ text: answer.text, correct: answer.correct }))
+            }),
+        });
+
+        if (!response.ok) {
+            console.error('Failed to submit the data.');
+        } else {
+            const data = await response.json();
+            console.log('Submission successful:', data);
+        }
+    };
 
     const isSelectedAnswerCorrect = () => {
         const answer = answers.find(answer => answer.text === selectedAnswer);
