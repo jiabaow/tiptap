@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react';
+import { nanoid } from 'nanoid';
 
 interface Answer {
     text: string;
@@ -21,6 +22,8 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
     const { questionText, answers, mode } = node.attrs;
     const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState<boolean>(false);
+    const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [uniqueName] = useState(() => nanoid());
 
     const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
     const answerTextareaRefs = useRef<Array<HTMLTextAreaElement | null>>([]);
@@ -84,10 +87,13 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
         updateAttributes({ answers: newAnswers });
     };
 
-    // const handleSubmit = () => {
-    //     setSubmitted(true);
-    // }
     const handleSubmit = async () => {
+        const selectedAnswerObject = answers.find(answer => answer.text === selectedAnswer);
+        if (selectedAnswerObject) {
+            setIsCorrect(selectedAnswerObject.correct);
+        }
+        setSubmitted(true);
+
         const response = await fetch('http://127.0.0.1:8000/api/submissions/', {
             method: 'POST',
             headers: {
@@ -154,7 +160,7 @@ const MCQComponent: React.FC<MCQComponentProps> = ({ node, updateAttributes }) =
                         <div key={index}>
                             <input
                                 type="radio"
-                                name="mcq"
+                                name={uniqueName}
                                 value={answer.text}
                                 checked={selectedAnswer === answer.text}
                                 onChange={() => handleAnswerChange(index)}
