@@ -17,7 +17,7 @@ declare module '@tiptap/core' {
     }
 }
 
-const AI_SHORTCUT_REGEX = /^\?\?$/; // ?? opens an AI block
+const AI_SHORTCUT_REGEX = /^\?\/$/; // ?/ opens an AI block
 
 export const AINode = Node.create<AIOptions>({
     name: 'ai',

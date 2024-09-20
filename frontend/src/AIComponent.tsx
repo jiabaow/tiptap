@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { NodeViewWrapper, NodeViewContent } from '@tiptap/react';
 import OpenAI from 'openai';
 
@@ -23,6 +23,25 @@ const AIComponent: React.FC<AIComponentProps> = ({ node, updateAttributes }) => 
     const [input, setInput] = useState(question);
     const [response, setResponse] = useState(answer);
 
+    const questionTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const adjustHeight = (el: HTMLTextAreaElement | null) => {
+        if (el) {
+            el.style.height = 'auto';
+            el.style.height = `${el.scrollHeight}px`;
+        }
+    }
+
+    useEffect(() => {
+        adjustHeight(questionTextareaRef.current);
+    }, [input]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setInput(e.target.value);
+        adjustHeight(e.target);
+        updateAttributes({ question: e.target.value });
+    };
+
     const getAnswer = async () => {
         try {
             const completion = await openai.chat.completions.create({
@@ -46,15 +65,15 @@ const AIComponent: React.FC<AIComponentProps> = ({ node, updateAttributes }) => 
         <NodeViewWrapper className="ai">
             {mode === 'edit' ? (
                 <div>
-                    <input
-                        type="text"
+                    <textarea
+                        ref={questionTextareaRef}
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
+                        onChange={handleInputChange}
                         placeholder="Ask a question..."
-                        onBlur={() => updateAttributes({ question: input })}
+                        style={{width: '100%', resize: 'none', overflow: 'hidden', minHeight: '2em'}}
                     />
                     <button onClick={getAnswer}>Get Answer</button>
-                    <div className="answer">{response}</div>
+                    <div className="answer"> Answer: {response}</div>
                 </div>
             ) : (
                 <div>
@@ -62,7 +81,7 @@ const AIComponent: React.FC<AIComponentProps> = ({ node, updateAttributes }) => 
                     <div className="answer">Answer: {answer}</div>
                 </div>
             )}
-            <NodeViewContent />
+            <NodeViewContent/>
         </NodeViewWrapper>
     );
 };
