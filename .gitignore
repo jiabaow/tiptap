@@ -1,12 +1,70 @@
+# Node modules
 node_modules/
 
+# Build and distribution directories
 dist/
 frontend/build/
-frontend/.env
-frontend/package-lock.json
-frontend/src/.DS_Store
-.DS_Store
 
-backend/db.sqlite3
+# Environment variables
+frontend/.env
 backend/env
 backend/.venv
+.env
+
+# Lock files
+frontend/package-lock.json
+yarn.lock
+
+# macOS specific files
+.DS_Store
+frontend/src/.DS_Store
+
+# IDE/Editor specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python specific files
+*.pyc
+*.pyo
+__pycache__/
+
+# Django specific files
+backend/db.sqlite3
+local_settings.py
+
+# Logs
+*.log
+
+# Coverage and test result files
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+testresults/
+xunit.xml
+
+# Packaging
+*.egg
+*.egg-info/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.venv
+venv/
+ENV/
+env.bak/
+
+# Static and media files
+staticfiles/
+media/
