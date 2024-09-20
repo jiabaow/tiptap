@@ -7,6 +7,7 @@ import TextStyle from "@tiptap/extension-text-style";
 import { EditorContent, useEditor, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { MCQ } from "./MCQNode";
+import { AINode } from "./AINode";
 
 interface MenuBarProps {
     editor: Editor | null;
@@ -26,6 +27,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
                 { text: 'answer 3', correct: false },
                 { text: 'answer 4', correct: false }
             ]
+        });
+    };
+
+    const addAIQuestion = () => {
+        editor.commands.setAI({
+            question: 'Ask me anything...',
+            answer: ''
         });
     };
 
@@ -144,6 +152,9 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
             <button onClick={addMCQ}>
                 add mcq
             </button>
+            <button onClick={addAIQuestion}>
+                ask ai
+            </button>
         </>
     );
 };
@@ -162,6 +173,7 @@ const extensions: Extensions = [
         },
     }),
     MCQ,
+    AINode,
 ];
 
 const initContent = `
@@ -207,10 +219,10 @@ const EditableEditor: React.FC<EditableEditorProps> = ({ onUpdate, isEditMode, e
         if (editor) {
             editor.setEditable(isEditMode);
             editor.view.state.doc.descendants((node, pos) => {
-                if (node.type.name === 'mcq') {
+                if (node.type.name === 'mcq' || node.type.name === 'ai') {
                     const transaction = editor.view.state.tr.setNodeMarkup(pos, undefined, {
                         ...node.attrs,
-                        mode: isEditMode ? 'edit' : 'view'
+                        mode: isEditMode ? 'edit' : 'view',
                     });
                     editor.view.dispatch(transaction);
                 }
