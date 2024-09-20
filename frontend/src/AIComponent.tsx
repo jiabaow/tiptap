@@ -26,7 +26,7 @@ const AIComponent: React.FC<AIComponentProps> = ({ node, updateAttributes }) => 
     const getAnswer = async () => {
         try {
             const completion = await openai.chat.completions.create({
-                model: 'gpt-4o-mini', // Use the correct model name
+                model: 'gpt-4o-mini',
                 messages: [
                     { role: 'system', content: 'You are a helpful assistant.' },
                     { role: 'user', content: input },

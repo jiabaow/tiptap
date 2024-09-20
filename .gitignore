@@ -4,6 +4,7 @@ dist/
 frontend/build/
 frontend/.env
 frontend/package-lock.json
+frontend/src/.DS_Store
 .DS_Store
 
 backend/db.sqlite3
